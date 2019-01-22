@@ -13,19 +13,6 @@ spec:
         app: fusionauth
     spec:
       initContainers:
-        # NOTE:
-        # This is to fix the permission on the volume
-        - name: fix-the-volume-permission
-          image: busybox
-          command:
-            - sh
-            - -c
-            - chown -R 1000:1000 /usr/local/fusionauth/config
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - name: fa-config
-              mountPath: /usr/local/fusionauth/config
         # App has to wait for the database to be online "depends_on" workaround
         - name: wait-for-db
           image: darthcabs/tiny-tools:1
@@ -51,31 +38,31 @@ spec:
                 sleep 15;
               done
       containers:
-      - env:
-        - name: DATABASE_USER
-          value: fusionauth
-        - name: DATABASE_PASSWORD
-          value: hkaLBM3RVnyYeYeqE3WI1w2e4Avpy0Wd5O3s3
-        - name: DATABASE_ROOT_PASSWORD
-        - name: DATABASE_ROOT_USER
-          value: postgres
-        - name: DATABASE_URL
-          value: jdbc:postgresql://fusionauth-db:5432/fusionauth
-        - name: FUSIONAUTH_MEMORY
-          value: 256M
-        - name: FUSIONAUTH_SEARCH_SERVERS
-          value: http://fusionauth-search:9200
-        image: fusionauth/fusionauth-app:latest
-        name: fusionauth
-        ports:
-        - containerPort: 9011
-        resources: {}
-        volumeMounts:
-        - mountPath: /usr/local/fusionauth/config
-          name: fa-config
+        - env:
+            - name: DATABASE_USER
+              value: fusionauth
+            - name: DATABASE_PASSWORD
+              value: hkaLBM3RVnyYeYeqE3WI1w2e4Avpy0Wd5O3s3
+            - name: DATABASE_ROOT_PASSWORD
+            - name: DATABASE_ROOT_USER
+              value: postgres
+            - name: DATABASE_URL
+              value: jdbc:postgresql://fusionauth-db:5432/fusionauth
+            - name: FUSIONAUTH_MEMORY
+              value: 256M
+            - name: FUSIONAUTH_SEARCH_SERVERS
+              value: http://fusionauth-search:9200
+          image: fusionauth/fusionauth-app:latest
+          name: fusionauth
+          ports:
+            - containerPort: 9011
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/local/fusionauth-config
+              name: fa-config
       restartPolicy: Always
       volumes:
-      - name: fa-config
-        persistentVolumeClaim:
-          claimName: fa-config
+        - name: fa-config
+          persistentVolumeClaim:
+            claimName: fa-config
 status: {}
