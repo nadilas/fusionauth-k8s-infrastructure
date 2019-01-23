@@ -57,12 +57,4 @@ spec:
           ports:
             - containerPort: 9011
           resources: {}
-          volumeMounts:
-            - mountPath: /usr/local/fusionauth-config
-              name: fa-config
       restartPolicy: Always
-      volumes:
-        - name: fa-config
-          persistentVolumeClaim:
-            claimName: fa-config
-status: {}
